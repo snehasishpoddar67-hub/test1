@@ -147,7 +147,7 @@
     font-size: 13px;
     font-weight: 700;
   }
-  .checkbox:focus-visible, .icon-btn:focus-visible, .nav-btn:focus-visible, .today-jump-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+  .checkbox:focus-visible, .icon-btn:focus-visible, .nav-btn:focus-visible, button:focus-visible, input:focus-visible{
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
@@ -245,6 +245,7 @@
     padding: 0 8px;
   }
 
+  /* Event countdown pill, used inside the day modal */
   .ecount{
     font-family: var(--font-mono);
     font-size: 11px;
@@ -260,77 +261,12 @@
   .cal-header{
     display:flex; align-items:center; justify-content:space-between;
     margin-bottom: 16px;
-    position: relative;
   }
-  .cal-nav-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .cal-title-btn{
-    background: none;
-    border: 1px solid transparent;
-    color: var(--text);
+  .cal-title{
     font-family: var(--font-display);
     font-size: 18px;
     font-weight: 600;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.15s ease, border-color 0.15s ease;
   }
-  .cal-title-btn:hover{
-    background: var(--surface-2);
-    border-color: var(--border);
-    color: var(--accent);
-  }
-
-  /* Month/Year Picker Dropdown */
-  .cal-picker-dropdown {
-    position: absolute;
-    top: 45px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    display: none;
-    gap: 8px;
-    align-items: center;
-    z-index: 20;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .cal-picker-dropdown.open {
-    display: flex;
-  }
-  .cal-picker-dropdown select {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-family: var(--font-body);
-    font-size: 13px;
-  }
-  .cal-picker-dropdown select:focus {
-    border-color: var(--accent);
-    outline: none;
-  }
-  .cal-picker-dropdown button {
-    background: var(--accent);
-    color: #1c1b1a;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .cal-picker-dropdown button:hover {
-    filter: brightness(1.08);
-  }
-
   .nav-btn{
     background: var(--surface-2);
     border: 1px solid var(--border);
@@ -341,24 +277,6 @@
     font-size: 14px;
   }
   .nav-btn:hover{ border-color: var(--accent); color: var(--accent); }
-
-  .today-jump-btn {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 0 10px;
-    height: 30px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .today-jump-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
 
   .dow-row{
     display:grid; grid-template-columns: repeat(7,1fr);
@@ -509,7 +427,7 @@
   }
   .fullscreen-btn:hover{ color: var(--text); border-color: var(--accent); }
 
-  /* Landscape Layout Adjustments */
+  /* ---- Landscape: fit everything in the viewport, no page scroll ---- */
   @media (orientation: landscape) and (max-height: 820px){
     html, body{ height: 100%; overflow: hidden; }
     body{ padding: 8px 16px; }
@@ -527,6 +445,9 @@
     .today-date{ margin-top: 2px; font-size: 10.5px; }
     .today-score .big{ font-size: 18px; }
 
+    /* The real fix: give the grid a definite, fillable row and make
+       items stretch into it, instead of shrink-to-fit (the default
+       align-items:start), so min-height:0 further down actually works. */
     .grid{
       flex: 1;
       min-height: 0;
@@ -552,11 +473,14 @@
     .time-input{ height: 30px; width: 92px; }
 
     .cal-header{ flex: none; margin-bottom: 6px; }
-    .cal-title-btn{ font-size: 13px; padding: 2px 6px; }
-    .nav-btn, .today-jump-btn{ width: 22px; height: 22px; font-size: 10px; padding: 0 6px; }
+    .cal-title{ font-size: 13px; }
+    .nav-btn{ width: 22px; height: 22px; font-size: 12px; }
     .dow-row{ flex: none; margin-bottom: 3px; gap: 4px; }
     .dow{ font-size: 9px; }
 
+    /* Cells fill whatever vertical room is left instead of being
+       forced square by aspect-ratio (which was pushing content past
+       the bottom of the screen). */
     .cal-grid{
       flex: 1;
       min-height: 0;
@@ -580,7 +504,7 @@
 
   <header class="top">
     <div>
-      <p class="eyebrow">Task Register</p>
+      <p class="eyebrow">Arther's Task Register</p>
       <h1>Daily Ledger</h1>
       <div class="today-date" id="todayDateLabel">—</div>
     </div>
@@ -607,32 +531,9 @@
 
     <div class="card">
       <div class="cal-header">
-        <div class="cal-nav-group">
-          <button class="nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
-          <button class="today-jump-btn" id="todayMonthBtn" aria-label="Jump to current month">Today</button>
-          <button class="nav-btn" id="nextMonth" aria-label="Next month">›</button>
-        </div>
-        <div style="position: relative;">
-          <button class="cal-title-btn" id="calTitleBtn" aria-label="Choose month and year">—</button>
-          <div class="cal-picker-dropdown" id="calPickerDropdown">
-            <select id="pickerMonth" aria-label="Select Month">
-              <option value="0">January</option>
-              <option value="1">February</option>
-              <option value="2">March</option>
-              <option value="3">April</option>
-              <option value="4">May</option>
-              <option value="5">June</option>
-              <option value="6">July</option>
-              <option value="7">August</option>
-              <option value="8">September</option>
-              <option value="9">October</option>
-              <option value="10">November</option>
-              <option value="11">December</option>
-            </select>
-            <select id="pickerYear" aria-label="Select Year"></select>
-            <button id="pickerGoBtn">Go</button>
-          </div>
-        </div>
+        <button class="nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
+        <div class="cal-title" id="calTitle">—</div>
+        <button class="nav-btn" id="nextMonth" aria-label="Next month">›</button>
       </div>
       <div class="dow-row">
         <div class="dow">Su</div><div class="dow">Mo</div><div class="dow">Tu</div>
@@ -673,6 +574,8 @@
   const COMPLETIONS_KEY = 'completions';
   const EVENTS_KEY = 'bigEvents';
 
+  // Local, on-device persistence — works when this file is opened directly
+  // in a browser (no server/account needed). Data lives in this browser only.
   const storage = {
     async get(key){
       const v = localStorage.getItem('ledger:' + key);
@@ -685,7 +588,7 @@
   };
 
   let state = { tasklist: [], completions: {}, events: [] };
-  let viewYear, viewMonth;
+  let viewYear, viewMonth; // calendar being displayed
   let loaded = false;
 
   function pad(n){ return n < 10 ? '0'+n : ''+n; }
@@ -746,6 +649,7 @@
     document.getElementById('statusLine').textContent = msg;
   }
 
+  // keep today's snapshot of tasks in sync with the live tasklist
   function ensureToday(){
     const t = todayStr();
     if(!state.completions[t]){
@@ -772,6 +676,7 @@
     return 's0';
   }
 
+  // ---------- render: today panel ----------
   function renderToday(){
     const entry = ensureToday();
     document.getElementById('todayDateLabel').textContent =
@@ -888,29 +793,15 @@
     setStatus('saved');
   }
 
-  function initYearPicker(){
-    const yearSelect = document.getElementById('pickerYear');
-    yearSelect.innerHTML = '';
-    const currentYear = new Date().getFullYear();
-    for(let y = currentYear - 10; y <= currentYear + 10; y++){
-      const opt = document.createElement('option');
-      opt.value = y;
-      opt.textContent = y;
-      yearSelect.appendChild(opt);
-    }
-  }
-
+  // ---------- render: calendar ----------
   function renderCalendar(){
     const first = new Date(viewYear, viewMonth, 1);
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
     const startDow = first.getDay();
     const tStr = todayStr();
 
-    document.getElementById('calTitleBtn').textContent =
+    document.getElementById('calTitle').textContent =
       first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
-
-    document.getElementById('pickerMonth').value = viewMonth;
-    document.getElementById('pickerYear').value = viewYear;
 
     const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
@@ -955,6 +846,8 @@
     setStatus('saved');
   }
 
+  // One modal for any day: shows/add an event for that date, plus the
+  // day's task history when the date isn't in the future.
   function openDayModal(ds){
     const overlay = document.getElementById('overlay');
     const dateObj = new Date(ds + 'T00:00:00');
@@ -969,6 +862,7 @@
     const body = document.getElementById('modalBody');
     body.innerHTML = '';
 
+    // --- event block ---
     if(dayEvents.length){
       const h = document.createElement('div');
       h.className = 'modal-section-title';
@@ -1022,6 +916,7 @@
       body.appendChild(addRow);
     }
 
+    // --- task history (only for today/past) ---
     if(isFuture){
       document.getElementById('modalPct').textContent = dayEvents.length ? countdownLabel(daysUntil(ds)) : 'upcoming';
     } else {
@@ -1080,6 +975,7 @@
     document.getElementById('overlay').classList.remove('open');
   }
  
+  // ---------- midnight rollover ----------
   let lastKnownDate = todayStr();
   function checkMidnightRollover(){
     const now = todayStr();
@@ -1095,7 +991,7 @@
     }
   }
  
-  // Wire up Event Listeners
+  // ---------- wire up ----------
   document.getElementById('addTaskBtn').addEventListener('click', addTask);
   document.getElementById('newTaskInput').addEventListener('keydown', (e) => {
     if(e.key === 'Enter') addTask();
@@ -1108,30 +1004,7 @@
     btn.classList.toggle('active', show);
     if(show) t.focus();
   });
-
-  // Month-Year Picker Toggle & Go
-  const calTitleBtn = document.getElementById('calTitleBtn');
-  const calPickerDropdown = document.getElementById('calPickerDropdown');
-  
-  calTitleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    calPickerDropdown.classList.toggle('open');
-  });
-
-  document.getElementById('pickerGoBtn').addEventListener('click', () => {
-    viewMonth = parseInt(document.getElementById('pickerMonth').value, 10);
-    viewYear = parseInt(document.getElementById('pickerYear').value, 10);
-    calPickerDropdown.classList.remove('open');
-    renderCalendar();
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if(!calPickerDropdown.contains(e.target) && e.target !== calTitleBtn){
-      calPickerDropdown.classList.remove('open');
-    }
-  });
-
+  // ---------- fullscreen ----------
   const fsBtn = document.getElementById('fullscreenBtn');
   const canFullscreen = !!(document.documentElement.requestFullscreen ||
     document.documentElement.webkitRequestFullscreen ||
@@ -1166,12 +1039,6 @@
     viewMonth++; if(viewMonth > 11){ viewMonth = 0; viewYear++; }
     renderCalendar();
   });
-  document.getElementById('todayMonthBtn').addEventListener('click', () => {
-    const now = new Date();
-    viewYear = now.getFullYear();
-    viewMonth = now.getMonth();
-    renderCalendar();
-  });
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('overlay').addEventListener('click', (e) => {
     if(e.target.id === 'overlay') closeModal();
@@ -1184,7 +1051,6 @@
     const now = new Date();
     viewYear = now.getFullYear();
     viewMonth = now.getMonth();
-    initYearPicker();
     setStatus('loading…');
     await loadState();
     ensureToday();
@@ -1193,7 +1059,7 @@
     renderCalendar();
     setStatus('saved');
     loaded = true;
-    setInterval(checkMidnightRollover, 30000);
+    setInterval(checkMidnightRollover, 30000); // check every 30s for date change
   }
  
   init();
