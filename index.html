@@ -9,23 +9,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #1c1b1a;
-    --surface: #242220;
-    --surface-2: #2c2a27;
-    --border: #3a3733;
-    --text: #ede6d6;
-    --text-muted: #9c9488;
-    --accent: #e8a33d;
-    --accent-soft: rgba(232,163,61,0.16);
+    /* Slate & Teal Gradient Theme */
+    --bg: linear-gradient(180deg, #2C3E50 0%, #4CA1AF 100%);
+    --surface: rgba(44, 62, 80, 0.65); /* Translucent dark slate */
+    --surface-2: rgba(255, 255, 255, 0.1);
+    --border: rgba(255, 255, 255, 0.2);
+    --text: #f8fafc;
+    --text-muted: #cbd5e1;
+    --accent: #4CA1AF;
+    --accent-soft: rgba(76, 161, 175, 0.2);
 
+    /* Original Progress Colors Restored for Calendar */
     --score-100: #1b5e20;
     --score-80: #5aa85e;
     --score-60: #e0b038;
     --score-40: #d97a63;
     --score-0: #8b2a2a;
-    --score-none: #322f2b;
-    --cyan: #4fd1d1;
-    --cyan-soft: rgba(79,209,209,0.16);
+    --score-none: rgba(0, 0, 0, 0.25);
+    
+    --cyan: #88e0ef; /* Brighter accent for events */
+    --cyan-soft: rgba(136, 224, 239, 0.2);
 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,6 +39,7 @@
   html,body{ margin:0; padding:0; }
   body{
     background: var(--bg);
+    background-attachment: fixed; /* Keeps gradient full-screen when scrolling */
     color: var(--text);
     font-family: var(--font-body);
     min-height: 100vh;
@@ -55,7 +59,7 @@
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--cyan);
     margin: 0 0 8px 0;
   }
   h1{
@@ -99,6 +103,8 @@
 
   .card{
     background: var(--surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 22px;
@@ -137,15 +143,16 @@
     transition: all 0.15s ease;
     background: transparent;
   }
+  /* Task Checkbox explicitly using the theme accent (teal) */
   .checkbox.done{
-    background: var(--score-100);
-    border-color: var(--score-100);
+    background: var(--accent);
+    border-color: var(--accent);
   }
   .checkbox.done::after{
     content: '✓';
-    color: #ede6d6;
+    color: #2C3E50; /* Dark checkmark on vibrant teal background */
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
   }
   .checkbox:focus-visible, .icon-btn:focus-visible, .nav-btn:focus-visible, button:focus-visible, input:focus-visible{
     outline: 2px solid var(--accent);
@@ -199,7 +206,7 @@
   .add-row input:focus{ border-color: var(--accent); outline: none; }
   .add-btn{
     background: var(--accent);
-    color: #1c1b1a;
+    color: #1a252f;
     border: none;
     border-radius: 6px;
     padding: 0 16px;
@@ -207,7 +214,7 @@
     font-size: 18px;
     cursor: pointer;
   }
-  .add-btn:hover{ filter: brightness(1.08); }
+  .add-btn:hover{ filter: brightness(1.15); }
 
   .empty-note{
     color: var(--text-muted);
@@ -218,8 +225,8 @@
   .task-time{
     font-family: var(--font-mono);
     font-size: 11px;
-    color: var(--accent);
-    background: var(--accent-soft);
+    color: var(--cyan);
+    background: var(--cyan-soft);
     padding: 2px 6px;
     border-radius: 4px;
     margin-right: 6px;
@@ -320,15 +327,17 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
   }
-  .cal-cell.s100, .cal-cell.s0{ color: #f3ede0; }
+  /* Original Heatmap colors restored */
+  .cal-cell.s100, .cal-cell.s0{ color: #f8fafc; }
   .cal-cell.s100{ background: var(--score-100); }
-  .cal-cell.s80{ background: var(--score-80); color: #1c1b1a; }
-  .cal-cell.s60{ background: var(--score-60); color: #1c1b1a; }
-  .cal-cell.s40{ background: var(--score-40); color: #1c1b1a; }
+  .cal-cell.s80{ background: var(--score-80); color: #1a252f; }
+  .cal-cell.s60{ background: var(--score-60); color: #1a252f; }
+  .cal-cell.s40{ background: var(--score-40); color: #1a252f; }
   .cal-cell.s0{ background: var(--score-0); }
+  
   .cal-cell.event{
     background: var(--cyan);
-    color: #10302f;
+    color: #1a252f;
     font-weight: 700;
   }
   .cal-cell.event:not(.pad):hover{
@@ -354,13 +363,15 @@
   /* Modal */
   .overlay{
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.7);
     display:none; align-items:center; justify-content:center;
     z-index: 50; padding: 20px;
   }
   .overlay.open{ display:flex; }
   .modal{
-    background: var(--surface);
+    background: #1c2833;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 10px;
     max-width: 420px; width: 100%;
@@ -396,7 +407,7 @@
   }
   .modal-task .name{ flex: 1; }
   .modal-task .mark{ font-size: 13px; }
-  .modal-task.done .mark{ color: var(--score-100); }
+  .modal-task.done .mark{ color: var(--accent); } /* Also decoupled from score-100 here */
   .modal-task.missed .mark{ color: var(--score-0); }
   .modal-task.missed span.name{ color: var(--text-muted); }
 
